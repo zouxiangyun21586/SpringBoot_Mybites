@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 为这个mapper指定一个唯一的namespace,namespace的值习惯上设置成包名+sql映射文件名,这样就能够保证namespace的值是唯一的 -->
+<mapper namespace="com.yr.mapper.StudentMapper"> <!-- 接口路径 -->
+    
+    <!-- 查询多个结果，返回resultMap -->
+    <resultMap type="student" id="queryOrderMap">
+        <id property="id" column="id" ></id>
+        <result property="name" column="name" />
+        <result property="sex" column="sex" />
+        <result property="age" column="age" />
+        <result property="addr" column="addr" />
+    </resultMap>
+    
+   <!--  <resultMap type="page" id="queryStudentPage">
+        <id property="pageSize" column="pageSize" ></id>
+        <result property="startIndex" column="startIndex" />
+        <result property="page" column="page" />
+        <result property="pageCount" column="pageCount" />
+        <result property="pageSizeCount" column="pageSizeCount" />
+    </resultMap> -->
+    
+    <select id="query" resultMap="queryOrderMap">
+        select * from student
+    </select>
+	
+	<!-- 语句的id, 传入的数据类型 -->
+	<insert id="ins" parameterType="student">
+		insert into student(name,sex,age,addr) values(#{name},#{sex},#{age},#{addr});
+	</insert>
+	
+	<!-- 删除 -->
+	<delete id="del" parameterType="java.lang.Integer">
+		delete from student 
+		<where>
+			id = #{id}
+		</where>
+	</delete>
+	
+	<!-- 修改  parameterType:带过来的参数 -->
+	<update id="upd" parameterType="student">
+		update student
+		<set>
+			name = #{name},sex = #{sex},age = #{age},addr = #{addr}
+		</set>
+		<where> 
+			id = #{id}
+		</where>
+	</update>
+	
+	<!-- 条件查询  resultType:返回的参数 -->
+    <select id="sel" parameterType="java.lang.Integer" resultType="student">
+        select * from student 
+		<where>
+			id = #{id}
+		</where>
+    </select>
+    
+    <select id="getCont" resultType="java.lang.Integer">
+    	select count(*) as count from student
+    </select>
+    
+    <select id="getName" resultType="student" parameterType="student">
+    	select * from student where name like CONCAT('%',#{name},'%')
+    </select>
+    
+    <select id="getContName" resultType="java.lang.Integer" parameterType="student">
+    	select count(*) as count from student where name LIKE CONCAT('%',#{name},'%')
+    </select>
+    
+    <select id="select" resultType="student" parameterType="page">
+    	select * from student limit #{startIndex} , #{pageSize}
+    </select>
+    
+    <!-- parameterType 中  #{参数} 是不能用 单引号扩起来,否则使用会报错 -->
+    <select id="selName" parameterType="page" resultType="student">
+		select * from student where name LIKE CONCAT('%',#{t1.name},'%') limit #{startIndex} , #{pageSize}
+    </select>
+</mapper>
